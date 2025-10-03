@@ -12,8 +12,18 @@ import TaxBenefitsDisplay from './tax-benefits';
 import { FormattedInput } from '@/components/ui/formatted-input';
 
 export function LoanComparison() {
-  const [loan1, setLoan1] = useState<Partial<LoanInputs>>({});
-  const [loan2, setLoan2] = useState<Partial<LoanInputs>>({});
+  const [loan1, setLoan1] = useState<Partial<LoanInputs>>({
+    closingCosts: {},
+    pmiConfig: { type: 'none' },
+    extraPayments: {},
+    loanType: 'fixed'
+  });
+  const [loan2, setLoan2] = useState<Partial<LoanInputs>>({
+    closingCosts: {},
+    pmiConfig: { type: 'none' },
+    extraPayments: {},
+    loanType: 'fixed'
+  });
   const [results1, setResults1] = useState<LoanResultsType | null>(null);
   const [results2, setResults2] = useState<LoanResultsType | null>(null);
 

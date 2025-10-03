@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { LoanInputs } from '@/types/loan';
+import { LoanInputs, ClosingCosts } from '@/types/loan';
 import { LoanInputsSchema } from '@/lib/validations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FormattedInput } from '@/components/ui/formatted-input';
@@ -9,6 +9,13 @@ import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { DownPaymentSection } from './loan-sections/down-payment-section';
+import { PointsFeesSection } from './loan-sections/points-fees-section';
+import { ClosingCostsSection } from './loan-sections/closing-costs-section';
+import { PMIConfigSection } from './loan-sections/pmi-config-section';
+import { ExtraPaymentsSection } from './loan-sections/extra-payments-section';
+import { ARMConfigSection } from './loan-sections/arm-config-section';
+import { calculateLTV } from '@/lib/mortgage-calculator';
 
 interface LoanInputFormProps {
   loanNumber: 1 | 2;
@@ -121,6 +128,117 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             </Alert>
           )}
         </div>
+
+        {/* NEW: Down Payment Section */}
+        <DownPaymentSection
+          propertyPrice={inputs.propertyPrice}
+          downPaymentPercent={inputs.downPaymentPercent}
+          downPaymentDollar={inputs.downPaymentDollar}
+          onPropertyPriceChange={(value) => onInputsChange({ ...inputs, propertyPrice: value })}
+          onDownPaymentPercentChange={(value) => onInputsChange({ ...inputs, downPaymentPercent: value })}
+          onDownPaymentDollarChange={(value) => onInputsChange({ ...inputs, downPaymentDollar: value })}
+          onLoanAmountCalculated={(loanAmount) => onInputsChange({ ...inputs, principal: loanAmount })}
+        />
+
+        {/* NEW: Points & Fees Section */}
+        <PointsFeesSection
+          discountPoints={inputs.discountPoints}
+          originationPoints={inputs.originationPoints}
+          lenderCredits={inputs.lenderCredits}
+          onDiscountPointsChange={(value) => onInputsChange({ ...inputs, discountPoints: value })}
+          onOriginationPointsChange={(value) => onInputsChange({ ...inputs, originationPoints: value })}
+          onLenderCreditsChange={(value) => onInputsChange({ ...inputs, lenderCredits: value })}
+        />
+
+        {/* NEW: Closing Costs Section */}
+        <ClosingCostsSection
+          closingCosts={inputs.closingCosts || {}}
+          sellerConcessions={inputs.sellerConcessions}
+          onClosingCostsChange={(field, value) => {
+            const updatedCosts = { ...inputs.closingCosts, [field]: value };
+            onInputsChange({ ...inputs, closingCosts: updatedCosts });
+          }}
+          onSellerConcessionsChange={(value) => onInputsChange({ ...inputs, sellerConcessions: value })}
+        />
+
+        {/* NEW: PMI Configuration Section */}
+        <PMIConfigSection
+          pmiConfig={inputs.pmiConfig || { type: 'none' }}
+          ltvPercent={inputs.propertyPrice && inputs.principal ? calculateLTV(inputs.principal, inputs.propertyPrice) : undefined}
+          onPmiTypeChange={(type) => {
+            const currentConfig = inputs.pmiConfig || { type: 'none' };
+            const updatedConfig = { ...currentConfig, type };
+            onInputsChange({ ...inputs, pmiConfig: updatedConfig });
+          }}
+          onPmiRateChange={(value) => {
+            const currentConfig = inputs.pmiConfig || { type: 'none' };
+            const updatedConfig = { ...currentConfig, monthlyRate: value };
+            onInputsChange({ ...inputs, pmiConfig: updatedConfig });
+          }}
+          onSinglePremiumChange={(value) => {
+            const currentConfig = inputs.pmiConfig || { type: 'none' };
+            const updatedConfig = { ...currentConfig, singlePremiumAmount: value };
+            onInputsChange({ ...inputs, pmiConfig: updatedConfig });
+          }}
+        />
+
+        {/* NEW: Extra Payments Section */}
+        <ExtraPaymentsSection
+          extraPayments={inputs.extraPayments || {}}
+          onExtraMonthlyChange={(value) => {
+            const currentExtra = inputs.extraPayments || {};
+            onInputsChange({ ...inputs, extraPayments: { ...currentExtra, extraMonthly: value } });
+          }}
+          onExtraAnnualChange={(value) => {
+            const currentExtra = inputs.extraPayments || {};
+            onInputsChange({ ...inputs, extraPayments: { ...currentExtra, extraAnnual: value } });
+          }}
+          onExtraAnnualMonthChange={(value) => {
+            const currentExtra = inputs.extraPayments || {};
+            onInputsChange({ ...inputs, extraPayments: { ...currentExtra, extraAnnualMonth: value } });
+          }}
+          onLumpSumsChange={(lumpSums) => {
+            const currentExtra = inputs.extraPayments || {};
+            onInputsChange({ ...inputs, extraPayments: { ...currentExtra, lumpSums } });
+          }}
+        />
+
+        {/* NEW: ARM Configuration Section */}
+        <ARMConfigSection
+          loanType={inputs.loanType || 'fixed'}
+          armConfig={inputs.armConfig}
+          onLoanTypeChange={(type) => {
+            if (type === 'arm' && !inputs.armConfig) {
+              // Initialize default ARM config when switching to ARM
+              onInputsChange({
+                ...inputs,
+                loanType: type,
+                armConfig: {
+                  initialFixedPeriodYears: 5,
+                  adjustmentFrequency: 'annual',
+                  initialCap: 2,
+                  periodicCap: 2,
+                  lifetimeCap: 5
+                }
+              });
+            } else {
+              onInputsChange({ ...inputs, loanType: type });
+            }
+          }}
+          onARMConfigChange={(field, value) => {
+            const currentARM = inputs.armConfig || {
+              initialFixedPeriodYears: 5,
+              adjustmentFrequency: 'annual',
+              initialCap: 2,
+              periodicCap: 2,
+              lifetimeCap: 5
+            };
+            onInputsChange({
+              ...inputs,
+              armConfig: { ...currentARM, [field]: value }
+            });
+          }}
+        />
 
         {/* Optional Fields - Collapsible */}
         <Collapsible open={showOptional} onOpenChange={setShowOptional}>

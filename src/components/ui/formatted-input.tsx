@@ -53,7 +53,7 @@ export function FormattedInput({ value, onChange, formatType, onBlur, ...props }
     if (rawValue === '') {
       onChange(undefined);
       setDisplayValue('');
-    } else if (!isNaN(numValue as number)) {
+    } else if (!isNaN(numValue as number) && numValue !== undefined) {
       onChange(numValue);
       setDisplayValue(formatNumber(numValue));
     }

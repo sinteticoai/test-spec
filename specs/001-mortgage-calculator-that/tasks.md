@@ -389,7 +389,7 @@ const [results2, setResults2] = useState<LoanResults | null>(null);
 - onCalculate callback fires when all required fields valid
 **Dependencies**: T016 (parallel with T022)
 **Reference**: `quickstart.md` Scenario 2, 3
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -405,7 +405,7 @@ const [results2, setResults2] = useState<LoanResults | null>(null);
 - Responsive layout renders correctly
 **Dependencies**: T019 (parallel with T021)
 **Reference**: `quickstart.md` Scenario 1, 6
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -416,7 +416,7 @@ npm test -- __tests__/components/
 ```
 **Expected Output**: All component tests PASS
 **Dependencies**: T021, T022
-**Status**: [ ]
+**Status**: [X]
 
 ---
 

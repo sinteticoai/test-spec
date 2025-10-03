@@ -1,17 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { LoanInputs, LoanResults as LoanResultsType } from '@/types/loan';
+import { TaxProfile } from '@/types/tax';
 import { calculateLoanResults, isLoanComplete } from '@/lib/mortgage-calculator';
+import { calculateTaxBenefits } from '@/lib/tax-calculator';
 import { LoanInputForm } from './loan-input-form';
 import { LoanResults } from './loan-results';
 import { AmortizationSchedule } from './amortization-schedule';
+import TaxBenefitsDisplay from './tax-benefits';
 
 export function LoanComparison() {
   const [loan1, setLoan1] = useState<Partial<LoanInputs>>({});
   const [loan2, setLoan2] = useState<Partial<LoanInputs>>({});
   const [results1, setResults1] = useState<LoanResultsType | null>(null);
   const [results2, setResults2] = useState<LoanResultsType | null>(null);
+
+  // Tax profile state (shared between loans)
+  const [taxProfile, setTaxProfile] = useState<TaxProfile>({
+    annualIncome: 0,
+    filingStatus: 'married_joint',
+    propertyTaxAnnual: 0
+  });
 
   const handleLoan1Change = (inputs: Partial<LoanInputs>) => {
     setLoan1(inputs);
@@ -49,6 +59,21 @@ export function LoanComparison() {
     }
   };
 
+  // Calculate tax benefits when loan results and tax profile are available
+  const taxBenefits1 = useMemo(() => {
+    if (results1 && taxProfile.annualIncome > 0 && isLoanComplete(loan1)) {
+      return calculateTaxBenefits(loan1 as LoanInputs, taxProfile);
+    }
+    return null;
+  }, [results1, taxProfile, loan1]);
+
+  const taxBenefits2 = useMemo(() => {
+    if (results2 && taxProfile.annualIncome > 0 && isLoanComplete(loan2)) {
+      return calculateTaxBenefits(loan2 as LoanInputs, taxProfile);
+    }
+    return null;
+  }, [results2, taxProfile, loan2]);
+
   return (
     <div className="space-y-8">
       {/* Input Forms */}
@@ -72,6 +97,26 @@ export function LoanComparison() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <LoanResults loanNumber={1} results={results1} />
           <LoanResults loanNumber={2} results={results2} />
+        </div>
+      )}
+
+      {/* Tax Benefits Display */}
+      {(taxBenefits1 || taxBenefits2) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {taxBenefits1 && (
+            <TaxBenefitsDisplay
+              calculation={taxBenefits1}
+              taxProfile={taxProfile}
+              onTaxProfileChange={setTaxProfile}
+            />
+          )}
+          {taxBenefits2 && (
+            <TaxBenefitsDisplay
+              calculation={taxBenefits2}
+              taxProfile={taxProfile}
+              onTaxProfileChange={setTaxProfile}
+            />
+          )}
         </div>
       )}
 

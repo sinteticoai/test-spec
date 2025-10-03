@@ -154,7 +154,7 @@ export interface LoanResults {
 ```
 **Dependencies**: T004
 **Reference**: `data-model.md` sections 1-3
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -169,7 +169,7 @@ export interface LoanResults {
 **Dependencies**: T001, T004, T008 (needs LoanInputs type)
 **Reference**: `data-model.md` "Validation Schemas" section
 **Expected**: validation.test.ts should now find the module but tests may still fail until schemas are complete
-**Status**: [ ]
+**Status**: [X]
 
 ---
 

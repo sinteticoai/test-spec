@@ -282,7 +282,7 @@ npm test -- __tests__/lib/validations.test.ts
 - Icons from Lucide React (DollarSign, Percent, Calendar)
 **Dependencies**: T002, T003, T008, T009
 **Reference**: `spec.md` FR-001, FR-002, FR-007, FR-008, FR-009
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -307,7 +307,7 @@ npm test -- __tests__/lib/validations.test.ts
 - Use formatCurrency from T013
 **Dependencies**: T002, T008, T013 (parallel with T016)
 **Reference**: `spec.md` FR-003, FR-004, FR-005, FR-016
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -329,7 +329,7 @@ npm test -- __tests__/lib/validations.test.ts
 - Format currency using formatCurrency
 **Dependencies**: T002, T003, T008, T013 (parallel with T016, T017)
 **Reference**: `spec.md` FR-012, FR-017; `research.md` section 7
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -355,7 +355,7 @@ const [results2, setResults2] = useState<LoanResults | null>(null);
 - Two AmortizationSchedule components (if results exist)
 **Dependencies**: T008, T012, T016, T017, T018
 **Reference**: `spec.md` FR-001, FR-006, FR-009; `research.md` section 4 "Responsive Layout", section 5 "State Management"
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -371,7 +371,7 @@ const [results2, setResults2] = useState<LoanResults | null>(null);
 - Keep as Server Component (wrapper only, LoanComparison is Client)
 **Dependencies**: T019
 **Reference**: `plan.md` "Code Organization" section
-**Status**: [ ]
+**Status**: [X]
 
 ---
 

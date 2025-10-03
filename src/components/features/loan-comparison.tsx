@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { LoanInputs, LoanResults as LoanResultsType } from '@/types/loan';
 import { TaxProfile } from '@/types/tax';
 import { calculateLoanResults, isLoanComplete } from '@/lib/mortgage-calculator';
@@ -9,6 +9,7 @@ import { LoanInputForm } from './loan-input-form';
 import { LoanResults } from './loan-results';
 import { AmortizationSchedule } from './amortization-schedule';
 import TaxBenefitsDisplay from './tax-benefits';
+import { FormattedInput } from '@/components/ui/formatted-input';
 
 export function LoanComparison() {
   const [loan1, setLoan1] = useState<Partial<LoanInputs>>({});
@@ -22,6 +23,34 @@ export function LoanComparison() {
     filingStatus: 'married_joint',
     propertyTaxAnnual: 0
   });
+
+  // Memoize the setTaxProfile callback to prevent re-renders
+  const handleTaxProfileChange = useCallback((profile: TaxProfile) => {
+    setTaxProfile(profile);
+  }, []);
+
+  // Store temporary values while typing (don't trigger calculations yet)
+  const [tempTaxProfile, setTempTaxProfile] = useState<TaxProfile>(taxProfile);
+
+  // Individual callbacks for each tax field - only update temp state while typing
+  const handleAnnualIncomeChange = useCallback((value: number | undefined) => {
+    setTempTaxProfile(prev => ({...prev, annualIncome: value || 0}));
+  }, []);
+
+  const handleFilingStatusChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newProfile = {...tempTaxProfile, filingStatus: e.target.value as TaxProfile['filingStatus']};
+    setTempTaxProfile(newProfile);
+    setTaxProfile(newProfile); // Update immediately for select
+  }, [tempTaxProfile]);
+
+  const handlePropertyTaxChange = useCallback((value: number | undefined) => {
+    setTempTaxProfile(prev => ({...prev, propertyTaxAnnual: value || 0}));
+  }, []);
+
+  // Commit temp values to actual profile on blur
+  const handleTaxFieldBlur = useCallback(() => {
+    setTaxProfile(tempTaxProfile);
+  }, [tempTaxProfile]);
 
   const handleLoan1Change = (inputs: Partial<LoanInputs>) => {
     setLoan1(inputs);
@@ -117,74 +146,27 @@ export function LoanComparison() {
       {/* Tax Benefits Display */}
       {(showTaxBenefits1 || showTaxBenefits2) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {showTaxBenefits1 && taxBenefits1 && (
+          {showTaxBenefits1 && (
             <TaxBenefitsDisplay
               calculation={taxBenefits1}
-              taxProfile={taxProfile}
-              onTaxProfileChange={setTaxProfile}
+              taxProfile={tempTaxProfile}
+              onTaxProfileChange={handleTaxProfileChange}
+              onAnnualIncomeChange={handleAnnualIncomeChange}
+              onPropertyTaxChange={handlePropertyTaxChange}
+              onFilingStatusChange={handleFilingStatusChange}
+              onFieldBlur={handleTaxFieldBlur}
             />
           )}
-          {showTaxBenefits1 && !taxBenefits1 && (
-            <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
-              <div className="px-6">
-                <h3 className="text-lg font-semibold mb-4">Tax Benefits</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Enter your tax information to see potential tax benefits from mortgage interest and property tax deductions.
-                </p>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Annual Income</label>
-                    <input
-                      type="number"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-2"
-                      placeholder="120000"
-                      value={taxProfile.annualIncome || ''}
-                      onChange={(e) => setTaxProfile({...taxProfile, annualIncome: parseFloat(e.target.value) || 0})}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Filing Status</label>
-                    <select
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-2"
-                      value={taxProfile.filingStatus}
-                      onChange={(e) => setTaxProfile({...taxProfile, filingStatus: e.target.value as TaxProfile['filingStatus']})}
-                    >
-                      <option value="single">Single</option>
-                      <option value="married_joint">Married Filing Jointly</option>
-                      <option value="married_separate">Married Filing Separately</option>
-                      <option value="head_of_household">Head of Household</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Property Tax (Annual)</label>
-                    <input
-                      type="number"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm mt-2"
-                      placeholder="12000"
-                      value={taxProfile.propertyTaxAnnual || ''}
-                      onChange={(e) => setTaxProfile({...taxProfile, propertyTaxAnnual: parseFloat(e.target.value) || 0})}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {showTaxBenefits2 && taxBenefits2 && (
+          {showTaxBenefits2 && (
             <TaxBenefitsDisplay
               calculation={taxBenefits2}
-              taxProfile={taxProfile}
-              onTaxProfileChange={setTaxProfile}
+              taxProfile={tempTaxProfile}
+              onTaxProfileChange={handleTaxProfileChange}
+              onAnnualIncomeChange={handleAnnualIncomeChange}
+              onPropertyTaxChange={handlePropertyTaxChange}
+              onFilingStatusChange={handleFilingStatusChange}
+              onFieldBlur={handleTaxFieldBlur}
             />
-          )}
-          {showTaxBenefits2 && !taxBenefits2 && (
-            <div className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
-              <div className="px-6">
-                <h3 className="text-lg font-semibold mb-4">Tax Benefits</h3>
-                <p className="text-sm text-muted-foreground">
-                  Enter your tax information on the left to see potential tax benefits.
-                </p>
-              </div>
-            </div>
           )}
         </div>
       )}

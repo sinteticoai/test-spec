@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { LoanInputs } from '@/types/loan';
 import { LoanInputsSchema } from '@/lib/validations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { FormattedInput } from '@/components/ui/formatted-input';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { DollarSign, Percent, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface LoanInputFormProps {
   loanNumber: 1 | 2;
@@ -63,17 +63,16 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
       <CardContent className="space-y-4">
         {/* Principal */}
         <div className="space-y-2">
-          <Label htmlFor={`principal-${loanNumber}`} className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4" />
+          <Label htmlFor={`principal-${loanNumber}`}>
             Loan Amount
           </Label>
-          <Input
+          <FormattedInput
             id={`principal-${loanNumber}`}
-            type="number"
-            placeholder="200000"
+            formatType="currency"
+            placeholder="$200,000"
             value={inputs.principal ?? ''}
-            onChange={(e) => onInputsChange({ ...inputs, principal: e.target.value === '' ? undefined : Number(e.target.value) })}
-            onBlur={(e) => handleBlur('principal', e.target.value)}
+            onChange={(value) => onInputsChange({ ...inputs, principal: value })}
+            onBlur={(e) => handleBlur('principal', (e.target as HTMLInputElement).value)}
           />
           {errors.principal && (
             <Alert variant="destructive">
@@ -84,18 +83,16 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
 
         {/* Interest Rate */}
         <div className="space-y-2">
-          <Label htmlFor={`interestRate-${loanNumber}`} className="flex items-center gap-2">
-            <Percent className="h-4 w-4" />
-            Interest Rate (%)
+          <Label htmlFor={`interestRate-${loanNumber}`}>
+            Interest Rate
           </Label>
-          <Input
+          <FormattedInput
             id={`interestRate-${loanNumber}`}
-            type="number"
-            step="0.01"
-            placeholder="5.0"
+            formatType="percentage"
+            placeholder="5.00%"
             value={inputs.interestRate ?? ''}
-            onChange={(e) => onInputsChange({ ...inputs, interestRate: e.target.value === '' ? undefined : Number(e.target.value) })}
-            onBlur={(e) => handleBlur('interestRate', e.target.value)}
+            onChange={(value) => onInputsChange({ ...inputs, interestRate: value })}
+            onBlur={(e) => handleBlur('interestRate', (e.target as HTMLInputElement).value)}
           />
           {errors.interestRate && (
             <Alert variant="destructive">
@@ -110,13 +107,13 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             <Calendar className="h-4 w-4" />
             Loan Term (years)
           </Label>
-          <Input
+          <FormattedInput
             id={`termYears-${loanNumber}`}
-            type="number"
+            formatType="number"
             placeholder="30"
             value={inputs.termYears ?? ''}
-            onChange={(e) => onInputsChange({ ...inputs, termYears: e.target.value === '' ? undefined : Number(e.target.value) })}
-            onBlur={(e) => handleBlur('termYears', e.target.value)}
+            onChange={(value) => onInputsChange({ ...inputs, termYears: value })}
+            onBlur={(e) => handleBlur('termYears', (e.target as HTMLInputElement).value)}
           />
           {errors.termYears && (
             <Alert variant="destructive">
@@ -135,15 +132,15 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             {/* Property Tax */}
             <div className="space-y-2">
               <Label htmlFor={`propertyTax-${loanNumber}`}>
-                Annual Property Tax ($)
+                Annual Property Tax
               </Label>
-              <Input
+              <FormattedInput
                 id={`propertyTax-${loanNumber}`}
-                type="number"
-                placeholder="3600"
+                formatType="currency"
+                placeholder="$3,600"
                 value={inputs.propertyTax ?? ''}
-                onChange={(e) => onInputsChange({ ...inputs, propertyTax: e.target.value === '' ? undefined : Number(e.target.value) })}
-                onBlur={(e) => handleBlur('propertyTax', e.target.value)}
+                onChange={(value) => onInputsChange({ ...inputs, propertyTax: value })}
+                onBlur={(e) => handleBlur('propertyTax', (e.target as HTMLInputElement).value)}
               />
               {errors.propertyTax && (
                 <Alert variant="destructive">
@@ -155,15 +152,15 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             {/* Insurance */}
             <div className="space-y-2">
               <Label htmlFor={`insurance-${loanNumber}`}>
-                Annual Insurance ($)
+                Annual Insurance
               </Label>
-              <Input
+              <FormattedInput
                 id={`insurance-${loanNumber}`}
-                type="number"
-                placeholder="1200"
+                formatType="currency"
+                placeholder="$1,200"
                 value={inputs.insurance ?? ''}
-                onChange={(e) => onInputsChange({ ...inputs, insurance: e.target.value === '' ? undefined : Number(e.target.value) })}
-                onBlur={(e) => handleBlur('insurance', e.target.value)}
+                onChange={(value) => onInputsChange({ ...inputs, insurance: value })}
+                onBlur={(e) => handleBlur('insurance', (e.target as HTMLInputElement).value)}
               />
               {errors.insurance && (
                 <Alert variant="destructive">
@@ -175,15 +172,15 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             {/* HOA Fees */}
             <div className="space-y-2">
               <Label htmlFor={`hoaFees-${loanNumber}`}>
-                Monthly HOA Fees ($)
+                Monthly HOA Fees
               </Label>
-              <Input
+              <FormattedInput
                 id={`hoaFees-${loanNumber}`}
-                type="number"
-                placeholder="150"
+                formatType="currency"
+                placeholder="$150"
                 value={inputs.hoaFees ?? ''}
-                onChange={(e) => onInputsChange({ ...inputs, hoaFees: e.target.value === '' ? undefined : Number(e.target.value) })}
-                onBlur={(e) => handleBlur('hoaFees', e.target.value)}
+                onChange={(value) => onInputsChange({ ...inputs, hoaFees: value })}
+                onBlur={(e) => handleBlur('hoaFees', (e.target as HTMLInputElement).value)}
               />
               {errors.hoaFees && (
                 <Alert variant="destructive">
@@ -195,15 +192,15 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             {/* PMI */}
             <div className="space-y-2">
               <Label htmlFor={`pmi-${loanNumber}`}>
-                Monthly PMI ($)
+                Monthly PMI
               </Label>
-              <Input
+              <FormattedInput
                 id={`pmi-${loanNumber}`}
-                type="number"
-                placeholder="100"
+                formatType="currency"
+                placeholder="$100"
                 value={inputs.pmi ?? ''}
-                onChange={(e) => onInputsChange({ ...inputs, pmi: e.target.value === '' ? undefined : Number(e.target.value) })}
-                onBlur={(e) => handleBlur('pmi', e.target.value)}
+                onChange={(value) => onInputsChange({ ...inputs, pmi: value })}
+                onBlur={(e) => handleBlur('pmi', (e.target as HTMLInputElement).value)}
               />
               {errors.pmi && (
                 <Alert variant="destructive">

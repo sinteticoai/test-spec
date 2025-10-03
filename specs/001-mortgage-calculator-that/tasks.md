@@ -42,7 +42,7 @@ npm install zod
 npm install --save-dev @types/jest @testing-library/react @testing-library/jest-dom
 ```
 **Dependencies**: None
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -54,7 +54,7 @@ npx shadcn-ui@latest add button card input label collapsible separator alert
 **Components**: button, card, input, label, collapsible, separator, alert
 **Location**: Will create files in `src/components/ui/`
 **Dependencies**: None (parallel with T003)
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -64,7 +64,7 @@ npx shadcn-ui@latest add button card input label collapsible separator alert
 npm install lucide-react
 ```
 **Dependencies**: None (parallel with T002)
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -78,7 +78,7 @@ mkdir -p __tests__/lib
 mkdir -p __tests__/components/features
 ```
 **Dependencies**: None
-**Status**: [ ]
+**Status**: [X]
 
 ---
 

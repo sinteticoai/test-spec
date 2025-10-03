@@ -422,6 +422,8 @@ npm test -- __tests__/components/
 
 ## Phase 3.7: Integration & Validation
 
+**NOTE**: Tasks T024-T032 are manual testing scenarios. The application builds successfully and is ready for manual validation. Run `npm run dev` and navigate to `http://localhost:3000` to execute these tests.
+
 ### T024: Execute quickstart scenario 1 (Basic Loan Comparison)
 **Description**: Manually test basic loan comparison workflow.
 **Action**:
@@ -431,7 +433,7 @@ npm test -- __tests__/components/
 4. Verify expected results match
 **Dependencies**: T020
 **Reference**: `quickstart.md` Scenario 1
-**Status**: [ ]
+**Status**: [MANUAL] Ready for validation
 
 ---
 
@@ -440,7 +442,7 @@ npm test -- __tests__/components/
 **Action**: Follow steps in `quickstart.md` Scenario 2
 **Dependencies**: T020
 **Reference**: `quickstart.md` Scenario 2
-**Status**: [ ]
+**Status**: [MANUAL] Ready for validation
 
 ---
 
@@ -449,7 +451,7 @@ npm test -- __tests__/components/
 **Action**: Follow steps in `quickstart.md` Scenario 3
 **Dependencies**: T020
 **Reference**: `quickstart.md` Scenario 3
-**Status**: [ ]
+**Status**: [MANUAL] Ready for validation
 
 ---
 
@@ -458,7 +460,7 @@ npm test -- __tests__/components/
 **Action**: Follow steps in `quickstart.md` Scenario 4
 **Dependencies**: T020
 **Reference**: `quickstart.md` Scenario 4
-**Status**: [ ]
+**Status**: [MANUAL] Ready for validation
 
 ---
 
@@ -467,7 +469,7 @@ npm test -- __tests__/components/
 **Action**: Follow steps in `quickstart.md` Scenario 5
 **Dependencies**: T020
 **Reference**: `quickstart.md` Scenario 5
-**Status**: [ ]
+**Status**: [MANUAL] Ready for validation
 
 ---
 
@@ -476,7 +478,7 @@ npm test -- __tests__/components/
 **Action**: Follow steps in `quickstart.md` Scenario 6
 **Dependencies**: T020
 **Reference**: `quickstart.md` Scenario 6
-**Status**: [ ]
+**Status**: [MANUAL] Ready for validation
 
 ---
 
@@ -485,7 +487,7 @@ npm test -- __tests__/components/
 **Action**: Follow steps in `quickstart.md` Scenarios 7 and 8
 **Dependencies**: T020
 **Reference**: `quickstart.md` Scenarios 7, 8
-**Status**: [ ]
+**Status**: [MANUAL] Ready for validation
 
 ---
 
@@ -494,7 +496,7 @@ npm test -- __tests__/components/
 **Action**: Follow steps in `quickstart.md` Scenario 9
 **Dependencies**: T020
 **Reference**: `quickstart.md` Scenario 9
-**Status**: [ ]
+**Status**: [MANUAL] Ready for validation
 
 ---
 
@@ -503,7 +505,7 @@ npm test -- __tests__/components/
 **Action**: Follow steps in `quickstart.md` Scenario 10
 **Dependencies**: T020
 **Reference**: `quickstart.md` Scenario 10
-**Status**: [ ]
+**Status**: [MANUAL] Ready for validation
 
 ---
 

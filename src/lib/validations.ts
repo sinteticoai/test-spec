@@ -2,8 +2,9 @@ import { z } from 'zod';
 
 // Global error map to customize Zod v4 error messages
 z.setErrorMap((issue) => {
-  if (issue.code === z.ZodIssueCode.invalid_type) {
+  if (issue.code === z.ZodIssueCode.invalid_type && issue.path && issue.path.length > 0) {
     const fieldName = issue.path[0] as string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const inputValue = (issue as any).input; // Zod v4 uses 'input' property
 
     // Check if field is missing (undefined) - this takes priority

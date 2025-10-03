@@ -4,7 +4,7 @@
  */
 
 import { FilingStatus, TaxBracket, TaxProfile, TaxBenefitCalculation } from '@/types/tax';
-import { LoanInputs } from './validations';
+import { LoanInputs } from '@/types/loan';
 import { generateAmortizationSchedule } from './mortgage-calculator';
 
 // 2025 Tax Constants

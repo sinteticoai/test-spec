@@ -1,14 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { LoanInputs } from '@/types/loan';
+import { LoanInputs, ClosingCosts } from '@/types/loan';
 import { LoanInputsSchema } from '@/lib/validations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { FormattedInput } from '@/components/ui/formatted-input';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { DollarSign, Percent, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { DownPaymentSection } from './loan-sections/down-payment-section';
+import { PointsFeesSection } from './loan-sections/points-fees-section';
+import { ClosingCostsSection } from './loan-sections/closing-costs-section';
+import { PMIConfigSection } from './loan-sections/pmi-config-section';
+import { ExtraPaymentsSection } from './loan-sections/extra-payments-section';
+import { ARMConfigSection } from './loan-sections/arm-config-section';
+import { calculateLTV } from '@/lib/mortgage-calculator';
 
 interface LoanInputFormProps {
   loanNumber: 1 | 2;
@@ -63,17 +70,16 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
       <CardContent className="space-y-4">
         {/* Principal */}
         <div className="space-y-2">
-          <Label htmlFor={`principal-${loanNumber}`} className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4" />
+          <Label htmlFor={`principal-${loanNumber}`}>
             Loan Amount
           </Label>
-          <Input
+          <FormattedInput
             id={`principal-${loanNumber}`}
-            type="number"
-            placeholder="200000"
+            formatType="currency"
+            placeholder="$200,000"
             value={inputs.principal ?? ''}
-            onChange={(e) => onInputsChange({ ...inputs, principal: e.target.value === '' ? undefined : Number(e.target.value) })}
-            onBlur={(e) => handleBlur('principal', e.target.value)}
+            onChange={(value) => onInputsChange({ ...inputs, principal: value })}
+            onBlur={(e) => handleBlur('principal', (e.target as HTMLInputElement).value)}
           />
           {errors.principal && (
             <Alert variant="destructive">
@@ -84,18 +90,16 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
 
         {/* Interest Rate */}
         <div className="space-y-2">
-          <Label htmlFor={`interestRate-${loanNumber}`} className="flex items-center gap-2">
-            <Percent className="h-4 w-4" />
-            Interest Rate (%)
+          <Label htmlFor={`interestRate-${loanNumber}`}>
+            Interest Rate
           </Label>
-          <Input
+          <FormattedInput
             id={`interestRate-${loanNumber}`}
-            type="number"
-            step="0.01"
-            placeholder="5.0"
+            formatType="percentage"
+            placeholder="5.00%"
             value={inputs.interestRate ?? ''}
-            onChange={(e) => onInputsChange({ ...inputs, interestRate: e.target.value === '' ? undefined : Number(e.target.value) })}
-            onBlur={(e) => handleBlur('interestRate', e.target.value)}
+            onChange={(value) => onInputsChange({ ...inputs, interestRate: value })}
+            onBlur={(e) => handleBlur('interestRate', (e.target as HTMLInputElement).value)}
           />
           {errors.interestRate && (
             <Alert variant="destructive">
@@ -110,13 +114,13 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             <Calendar className="h-4 w-4" />
             Loan Term (years)
           </Label>
-          <Input
+          <FormattedInput
             id={`termYears-${loanNumber}`}
-            type="number"
+            formatType="number"
             placeholder="30"
             value={inputs.termYears ?? ''}
-            onChange={(e) => onInputsChange({ ...inputs, termYears: e.target.value === '' ? undefined : Number(e.target.value) })}
-            onBlur={(e) => handleBlur('termYears', e.target.value)}
+            onChange={(value) => onInputsChange({ ...inputs, termYears: value })}
+            onBlur={(e) => handleBlur('termYears', (e.target as HTMLInputElement).value)}
           />
           {errors.termYears && (
             <Alert variant="destructive">
@@ -124,6 +128,117 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             </Alert>
           )}
         </div>
+
+        {/* NEW: Down Payment Section */}
+        <DownPaymentSection
+          propertyPrice={inputs.propertyPrice}
+          downPaymentPercent={inputs.downPaymentPercent}
+          downPaymentDollar={inputs.downPaymentDollar}
+          onPropertyPriceChange={(value) => onInputsChange({ ...inputs, propertyPrice: value })}
+          onDownPaymentPercentChange={(value) => onInputsChange({ ...inputs, downPaymentPercent: value })}
+          onDownPaymentDollarChange={(value) => onInputsChange({ ...inputs, downPaymentDollar: value })}
+          onLoanAmountCalculated={(loanAmount) => onInputsChange({ ...inputs, principal: loanAmount })}
+        />
+
+        {/* NEW: Points & Fees Section */}
+        <PointsFeesSection
+          discountPoints={inputs.discountPoints}
+          originationPoints={inputs.originationPoints}
+          lenderCredits={inputs.lenderCredits}
+          onDiscountPointsChange={(value) => onInputsChange({ ...inputs, discountPoints: value })}
+          onOriginationPointsChange={(value) => onInputsChange({ ...inputs, originationPoints: value })}
+          onLenderCreditsChange={(value) => onInputsChange({ ...inputs, lenderCredits: value })}
+        />
+
+        {/* NEW: Closing Costs Section */}
+        <ClosingCostsSection
+          closingCosts={inputs.closingCosts || {}}
+          sellerConcessions={inputs.sellerConcessions}
+          onClosingCostsChange={(field, value) => {
+            const updatedCosts = { ...inputs.closingCosts, [field]: value };
+            onInputsChange({ ...inputs, closingCosts: updatedCosts });
+          }}
+          onSellerConcessionsChange={(value) => onInputsChange({ ...inputs, sellerConcessions: value })}
+        />
+
+        {/* NEW: PMI Configuration Section */}
+        <PMIConfigSection
+          pmiConfig={inputs.pmiConfig || { type: 'none' }}
+          ltvPercent={inputs.propertyPrice && inputs.principal ? calculateLTV(inputs.principal, inputs.propertyPrice) : undefined}
+          onPmiTypeChange={(type) => {
+            const currentConfig = inputs.pmiConfig || { type: 'none' };
+            const updatedConfig = { ...currentConfig, type };
+            onInputsChange({ ...inputs, pmiConfig: updatedConfig });
+          }}
+          onPmiRateChange={(value) => {
+            const currentConfig = inputs.pmiConfig || { type: 'none' };
+            const updatedConfig = { ...currentConfig, monthlyRate: value };
+            onInputsChange({ ...inputs, pmiConfig: updatedConfig });
+          }}
+          onSinglePremiumChange={(value) => {
+            const currentConfig = inputs.pmiConfig || { type: 'none' };
+            const updatedConfig = { ...currentConfig, singlePremiumAmount: value };
+            onInputsChange({ ...inputs, pmiConfig: updatedConfig });
+          }}
+        />
+
+        {/* NEW: Extra Payments Section */}
+        <ExtraPaymentsSection
+          extraPayments={inputs.extraPayments || {}}
+          onExtraMonthlyChange={(value) => {
+            const currentExtra = inputs.extraPayments || {};
+            onInputsChange({ ...inputs, extraPayments: { ...currentExtra, extraMonthly: value } });
+          }}
+          onExtraAnnualChange={(value) => {
+            const currentExtra = inputs.extraPayments || {};
+            onInputsChange({ ...inputs, extraPayments: { ...currentExtra, extraAnnual: value } });
+          }}
+          onExtraAnnualMonthChange={(value) => {
+            const currentExtra = inputs.extraPayments || {};
+            onInputsChange({ ...inputs, extraPayments: { ...currentExtra, extraAnnualMonth: value } });
+          }}
+          onLumpSumsChange={(lumpSums) => {
+            const currentExtra = inputs.extraPayments || {};
+            onInputsChange({ ...inputs, extraPayments: { ...currentExtra, lumpSums } });
+          }}
+        />
+
+        {/* NEW: ARM Configuration Section */}
+        <ARMConfigSection
+          loanType={inputs.loanType || 'fixed'}
+          armConfig={inputs.armConfig}
+          onLoanTypeChange={(type) => {
+            if (type === 'arm' && !inputs.armConfig) {
+              // Initialize default ARM config when switching to ARM
+              onInputsChange({
+                ...inputs,
+                loanType: type,
+                armConfig: {
+                  initialFixedPeriodYears: 5,
+                  adjustmentFrequency: 'annual',
+                  initialCap: 2,
+                  periodicCap: 2,
+                  lifetimeCap: 5
+                }
+              });
+            } else {
+              onInputsChange({ ...inputs, loanType: type });
+            }
+          }}
+          onARMConfigChange={(field, value) => {
+            const currentARM = inputs.armConfig || {
+              initialFixedPeriodYears: 5,
+              adjustmentFrequency: 'annual',
+              initialCap: 2,
+              periodicCap: 2,
+              lifetimeCap: 5
+            };
+            onInputsChange({
+              ...inputs,
+              armConfig: { ...currentARM, [field]: value }
+            });
+          }}
+        />
 
         {/* Optional Fields - Collapsible */}
         <Collapsible open={showOptional} onOpenChange={setShowOptional}>
@@ -135,15 +250,15 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             {/* Property Tax */}
             <div className="space-y-2">
               <Label htmlFor={`propertyTax-${loanNumber}`}>
-                Annual Property Tax ($)
+                Annual Property Tax
               </Label>
-              <Input
+              <FormattedInput
                 id={`propertyTax-${loanNumber}`}
-                type="number"
-                placeholder="3600"
+                formatType="currency"
+                placeholder="$3,600"
                 value={inputs.propertyTax ?? ''}
-                onChange={(e) => onInputsChange({ ...inputs, propertyTax: e.target.value === '' ? undefined : Number(e.target.value) })}
-                onBlur={(e) => handleBlur('propertyTax', e.target.value)}
+                onChange={(value) => onInputsChange({ ...inputs, propertyTax: value })}
+                onBlur={(e) => handleBlur('propertyTax', (e.target as HTMLInputElement).value)}
               />
               {errors.propertyTax && (
                 <Alert variant="destructive">
@@ -155,15 +270,15 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             {/* Insurance */}
             <div className="space-y-2">
               <Label htmlFor={`insurance-${loanNumber}`}>
-                Annual Insurance ($)
+                Annual Insurance
               </Label>
-              <Input
+              <FormattedInput
                 id={`insurance-${loanNumber}`}
-                type="number"
-                placeholder="1200"
+                formatType="currency"
+                placeholder="$1,200"
                 value={inputs.insurance ?? ''}
-                onChange={(e) => onInputsChange({ ...inputs, insurance: e.target.value === '' ? undefined : Number(e.target.value) })}
-                onBlur={(e) => handleBlur('insurance', e.target.value)}
+                onChange={(value) => onInputsChange({ ...inputs, insurance: value })}
+                onBlur={(e) => handleBlur('insurance', (e.target as HTMLInputElement).value)}
               />
               {errors.insurance && (
                 <Alert variant="destructive">
@@ -175,15 +290,15 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             {/* HOA Fees */}
             <div className="space-y-2">
               <Label htmlFor={`hoaFees-${loanNumber}`}>
-                Monthly HOA Fees ($)
+                Monthly HOA Fees
               </Label>
-              <Input
+              <FormattedInput
                 id={`hoaFees-${loanNumber}`}
-                type="number"
-                placeholder="150"
+                formatType="currency"
+                placeholder="$150"
                 value={inputs.hoaFees ?? ''}
-                onChange={(e) => onInputsChange({ ...inputs, hoaFees: e.target.value === '' ? undefined : Number(e.target.value) })}
-                onBlur={(e) => handleBlur('hoaFees', e.target.value)}
+                onChange={(value) => onInputsChange({ ...inputs, hoaFees: value })}
+                onBlur={(e) => handleBlur('hoaFees', (e.target as HTMLInputElement).value)}
               />
               {errors.hoaFees && (
                 <Alert variant="destructive">
@@ -195,15 +310,15 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             {/* PMI */}
             <div className="space-y-2">
               <Label htmlFor={`pmi-${loanNumber}`}>
-                Monthly PMI ($)
+                Monthly PMI
               </Label>
-              <Input
+              <FormattedInput
                 id={`pmi-${loanNumber}`}
-                type="number"
-                placeholder="100"
+                formatType="currency"
+                placeholder="$100"
                 value={inputs.pmi ?? ''}
-                onChange={(e) => onInputsChange({ ...inputs, pmi: e.target.value === '' ? undefined : Number(e.target.value) })}
-                onBlur={(e) => handleBlur('pmi', e.target.value)}
+                onChange={(value) => onInputsChange({ ...inputs, pmi: value })}
+                onBlur={(e) => handleBlur('pmi', (e.target as HTMLInputElement).value)}
               />
               {errors.pmi && (
                 <Alert variant="destructive">

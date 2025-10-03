@@ -291,8 +291,11 @@ Contract Tests          Unit Tests      Component Tests → Quickstart
   - Task generation strategy documented
   - Dependency graph defined
   - Estimated 35-40 tasks
-- [ ] Phase 3: Tasks generated (/tasks command) - **NEXT STEP**
-- [ ] Phase 4: Implementation complete
+- [x] Phase 3: Tasks generated (/tasks command) ✅
+  - Generated: `tasks.md` (37 numbered tasks with dependencies)
+  - 10 parallel tasks identified [P]
+  - TDD workflow enforced (contract tests first)
+- [ ] Phase 4: Implementation complete - **NEXT STEP**
 - [ ] Phase 5: Validation passed
 
 **Gate Status**:
@@ -307,7 +310,9 @@ Contract Tests          Unit Tests      Component Tests → Quickstart
 3. `/Users/cristian/Apps/test-spec/specs/001-mortgage-calculator-that/contracts/mortgage-calculator.contract.ts`
 4. `/Users/cristian/Apps/test-spec/specs/001-mortgage-calculator-that/contracts/validation.contract.ts`
 5. `/Users/cristian/Apps/test-spec/specs/001-mortgage-calculator-that/quickstart.md`
-6. `/Users/cristian/Apps/test-spec/AGENTS.md`
+6. `/Users/cristian/Apps/test-spec/specs/001-mortgage-calculator-that/tasks.md`
+7. `/Users/cristian/Apps/test-spec/AGENTS.md`
+8. `/Users/cristian/Apps/test-spec/CLAUDE.md` (updated)
 
 ---
 *Based on Constitution v1.0.0 - See `.specify/memory/constitution.md`*

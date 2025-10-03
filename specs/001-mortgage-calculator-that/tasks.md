@@ -93,7 +93,7 @@ mkdir -p __tests__/components/features
 **Action**: Copy file and verify imports are correct (change from `@jest/globals` if needed)
 **Dependencies**: T001, T004
 **Expected**: Test file should be runnable but ALL tests should FAIL (functions don't exist yet)
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -104,7 +104,7 @@ mkdir -p __tests__/components/features
 **Action**: Copy file and verify imports are correct
 **Dependencies**: T001, T004 (parallel with T005)
 **Expected**: Test file should be runnable but ALL tests should FAIL (schemas don't exist yet)
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -115,7 +115,7 @@ npm test -- __tests__/lib/
 ```
 **Expected Output**: All tests FAIL with errors like "Cannot find module '@/lib/mortgage-calculator'" or "Cannot find module '@/lib/validations'"
 **Dependencies**: T005, T006
-**Status**: [ ]
+**Status**: [X]
 
 ---
 

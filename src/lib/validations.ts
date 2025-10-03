@@ -35,3 +35,22 @@ export const LoanInputsSchema = z.object({
 });
 
 export type LoanInputs = z.infer<typeof LoanInputsSchema>;
+
+// Tax-related validation schemas
+export const FilingStatusSchema = z.enum([
+  'single',
+  'married_joint',
+  'married_separate',
+  'head_of_household'
+]);
+
+export const TaxProfileSchema = z.object({
+  annualIncome: z.number()
+    .positive("Income must be positive")
+    .max(10_000_000, "Income must be reasonable"),
+  filingStatus: FilingStatusSchema,
+  propertyTaxAnnual: z.number()
+    .min(0, "Property tax cannot be negative")
+});
+
+export type TaxProfile = z.infer<typeof TaxProfileSchema>;

@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from '@jest/globals';
-import type { LoanInputs, LoanResults, AmortizationEntry } from '@/types/loan';
+import type { LoanInputs } from '@/types/loan';
 
 // Import functions to test (will not exist initially)
 import {

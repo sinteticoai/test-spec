@@ -185,7 +185,7 @@ export interface LoanResults {
 **Dependencies**: T008
 **Reference**: `research.md` section 1 "Mortgage Calculation Algorithms"
 **Test Coverage**: Should pass tests in mortgage-calculator.test.ts "calculateMonthlyPayment" describe block
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -201,7 +201,7 @@ export interface LoanResults {
 **Dependencies**: T008, T010
 **Reference**: `research.md` section 1, `data-model.md` section 3
 **Test Coverage**: Should pass tests in mortgage-calculator.test.ts "generateAmortizationSchedule" describe block
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -218,7 +218,7 @@ export interface LoanResults {
 **Dependencies**: T008, T010, T011
 **Reference**: `data-model.md` section 2 "LoanResults"
 **Test Coverage**: Should pass tests in mortgage-calculator.test.ts "calculateLoanResults" and "Edge Cases" describe blocks
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -231,7 +231,7 @@ export interface LoanResults {
 - `isLoanComplete(inputs: Partial<LoanInputs>): inputs is LoanInputs` - type guard
 **Dependencies**: T008 (parallel with T010-T012, but same file so not truly parallel)
 **Reference**: `data-model.md` section "Type Guards & Utilities"
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -242,7 +242,7 @@ npm test -- __tests__/lib/mortgage-calculator.test.ts
 ```
 **Expected Output**: All tests PASS (25+ tests)
 **Dependencies**: T010, T011, T012, T013
-**Status**: [ ]
+**Status**: [X]
 
 ---
 
@@ -253,7 +253,7 @@ npm test -- __tests__/lib/validations.test.ts
 ```
 **Expected Output**: All tests PASS (35+ tests)
 **Dependencies**: T009
-**Status**: [ ]
+**Status**: [X]
 
 ---
 

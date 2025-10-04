@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { syncDownPayment } from '@/lib/mortgage-calculator';
 
 interface DownPaymentSectionProps {
+  loanNumber?: number;
   propertyPrice?: number;
   downPaymentPercent?: number;
   downPaymentDollar?: number;
@@ -15,6 +16,7 @@ interface DownPaymentSectionProps {
 }
 
 export function DownPaymentSection({
+  loanNumber = 1,
   propertyPrice,
   downPaymentPercent,
   downPaymentDollar,
@@ -36,8 +38,11 @@ export function DownPaymentSection({
 
   const handlePercentChange = (value: number | undefined) => {
     onDownPaymentPercentChange(value);
-    if (propertyPrice && value !== undefined) {
-      const synced = syncDownPayment(propertyPrice, value, undefined);
+  };
+
+  const handlePercentBlur = () => {
+    if (propertyPrice && downPaymentPercent !== undefined) {
+      const synced = syncDownPayment(propertyPrice, downPaymentPercent, undefined);
       onDownPaymentDollarChange(synced.dollar);
       onLoanAmountCalculated(synced.loanAmount);
     }
@@ -47,9 +52,9 @@ export function DownPaymentSection({
     <div className="space-y-4">
       {/* Property Price - Full Width */}
       <div className="space-y-2">
-        <Label htmlFor="property-price">Property Price</Label>
+        <Label htmlFor={`property-price-${loanNumber}`}>Property Price</Label>
         <FormattedInput
-          id="property-price"
+          id={`property-price-${loanNumber}`}
           formatType="currency"
           value={propertyPrice}
           onChange={handlePropertyPriceChange}
@@ -59,21 +64,22 @@ export function DownPaymentSection({
 
       {/* Down Payment % - Full Width */}
       <div className="space-y-2">
-        <Label htmlFor="down-payment-percent">Down Payment (%)</Label>
+        <Label htmlFor={`down-payment-percent-${loanNumber}`}>Down Payment (%)</Label>
         <FormattedInput
-          id="down-payment-percent"
+          id={`down-payment-percent-${loanNumber}`}
           formatType="percentage"
           value={downPaymentPercent}
           onChange={handlePercentChange}
+          onBlur={handlePercentBlur}
           placeholder="20%"
         />
       </div>
 
       {/* Down Payment $ - Full Width, Read-only with gray background */}
       <div className="space-y-2">
-        <Label htmlFor="down-payment-dollar">Down Payment ($)</Label>
+        <Label htmlFor={`down-payment-dollar-${loanNumber}`}>Down Payment ($)</Label>
         <FormattedInput
-          id="down-payment-dollar"
+          id={`down-payment-dollar-${loanNumber}`}
           formatType="currency"
           value={downPaymentDollar}
           onChange={() => {}} // Read-only calculated field

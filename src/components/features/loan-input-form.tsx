@@ -70,6 +70,7 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
       <CardContent className="space-y-4">
         {/* NEW: Down Payment Section - Includes Property Price, Down Payment %, Down Payment $ */}
         <DownPaymentSection
+          loanNumber={loanNumber}
           propertyPrice={inputs.propertyPrice}
           downPaymentPercent={inputs.downPaymentPercent}
           downPaymentDollar={inputs.downPaymentDollar}

@@ -25,45 +25,58 @@ export function FormattedInput({ value, onChange, formatType, onBlur, ...props }
     }
   };
 
-  // Update display value when value changes and field is not focused
+  // Update display value when value changes from outside (parent component)
+  // but ONLY when the field is not focused
   React.useEffect(() => {
-    // For readOnly fields, always update the display (they won't have focus)
-    // For regular fields, only update when not focused
-    const shouldUpdate = props.readOnly || !isFocused;
-
-    if (shouldUpdate) {
-      if (value !== undefined && value !== '' && value !== 0) {
-        setDisplayValue(formatNumber(value as number));
-      } else {
-        setDisplayValue('');
-      }
+    // Don't update display if user is actively typing
+    if (isFocused && !props.readOnly) {
+      return;
     }
-  }, [value, isFocused, props.readOnly]);
+
+    // Update display value with formatted version
+    if (value !== undefined && value !== '') {
+      setDisplayValue(formatNumber(value as number));
+    } else {
+      setDisplayValue('');
+    }
+  }, [value, formatType, props.readOnly]);
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     // Don't handle focus for readOnly fields - they should always show formatted value
     if (props.readOnly) {
       return;
     }
+
     setIsFocused(true);
-    // Show raw number when focused
-    const rawValue = value !== undefined && value !== '' && value !== 0 ? String(value) : '';
-    setDisplayValue(rawValue);
+
+    // Show raw number when focused (remove formatting)
+    if (value !== undefined && value !== '') {
+      setDisplayValue(String(value));
+    } else {
+      setDisplayValue('');
+    }
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setIsFocused(false);
 
-    const rawValue = e.target.value;
+    const rawValue = e.target.value.trim();
     const numValue = rawValue === '' ? undefined : Number(rawValue);
 
-    // Call onChange with final value
+    // Update parent with final value
     if (rawValue === '') {
       onChange(undefined);
       setDisplayValue('');
     } else if (!isNaN(numValue as number) && numValue !== undefined) {
       onChange(numValue);
       setDisplayValue(formatNumber(numValue));
+    } else {
+      // Invalid input - revert to previous value
+      if (value !== undefined && value !== '') {
+        setDisplayValue(formatNumber(value as number));
+      } else {
+        setDisplayValue('');
+      }
     }
 
     // Call parent onBlur if provided
@@ -73,20 +86,9 @@ export function FormattedInput({ value, onChange, formatType, onBlur, ...props }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
-
-    // CRITICAL: Update display value immediately while focused
-    setDisplayValue(rawValue);
-
-    // Update parent state
-    if (rawValue === '') {
-      onChange(undefined);
-    } else {
-      const numValue = Number(rawValue);
-      if (!isNaN(numValue)) {
-        onChange(numValue);
-      }
-    }
+    // Only update local display value while typing
+    // Don't call onChange until blur
+    setDisplayValue(e.target.value);
   };
 
   return (

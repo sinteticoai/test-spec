@@ -132,7 +132,8 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
             value={inputs.principal ?? ''}
             onChange={() => {}} // Read-only calculated field
             onBlur={(e) => handleBlur('principal', (e.target as HTMLInputElement).value)}
-            disabled
+            readOnly
+            className="bg-gray-100"
           />
           {errors.principal && (
             <Alert variant="destructive">

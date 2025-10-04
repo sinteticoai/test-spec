@@ -68,7 +68,8 @@ export function DownPaymentSection({
           value={downPaymentDollar}
           onChange={() => {}} // Read-only calculated field
           placeholder="Calculated"
-          disabled
+          readOnly
+          className="bg-gray-100"
         />
       </div>
     </div>

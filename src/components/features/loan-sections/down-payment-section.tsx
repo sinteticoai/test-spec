@@ -24,6 +24,16 @@ export function DownPaymentSection({
   onLoanAmountCalculated
 }: DownPaymentSectionProps) {
 
+  const handlePropertyPriceChange = (value: number | undefined) => {
+    onPropertyPriceChange(value);
+    // If we have a down payment percent, recalculate the dollar amount
+    if (value && downPaymentPercent !== undefined) {
+      const synced = syncDownPayment(value, downPaymentPercent, undefined);
+      onDownPaymentDollarChange(synced.dollar);
+      onLoanAmountCalculated(synced.loanAmount);
+    }
+  };
+
   const handlePercentChange = (value: number | undefined) => {
     onDownPaymentPercentChange(value);
     if (propertyPrice && value !== undefined) {
@@ -42,7 +52,7 @@ export function DownPaymentSection({
           id="property-price"
           formatType="currency"
           value={propertyPrice}
-          onChange={onPropertyPriceChange}
+          onChange={handlePropertyPriceChange}
           placeholder="$500,000"
         />
       </div>

@@ -68,25 +68,16 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
         <CardTitle>Loan {loanNumber}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Principal */}
-        <div className="space-y-2">
-          <Label htmlFor={`principal-${loanNumber}`}>
-            Loan Amount
-          </Label>
-          <FormattedInput
-            id={`principal-${loanNumber}`}
-            formatType="currency"
-            placeholder="$200,000"
-            value={inputs.principal ?? ''}
-            onChange={(value) => onInputsChange({ ...inputs, principal: value })}
-            onBlur={(e) => handleBlur('principal', (e.target as HTMLInputElement).value)}
-          />
-          {errors.principal && (
-            <Alert variant="destructive">
-              <AlertDescription>{errors.principal}</AlertDescription>
-            </Alert>
-          )}
-        </div>
+        {/* NEW: Down Payment Section - Includes Property Price, Down Payment %, Down Payment $ */}
+        <DownPaymentSection
+          propertyPrice={inputs.propertyPrice}
+          downPaymentPercent={inputs.downPaymentPercent}
+          downPaymentDollar={inputs.downPaymentDollar}
+          onPropertyPriceChange={(value) => onInputsChange({ ...inputs, propertyPrice: value })}
+          onDownPaymentPercentChange={(value) => onInputsChange({ ...inputs, downPaymentPercent: value })}
+          onDownPaymentDollarChange={(value) => onInputsChange({ ...inputs, downPaymentDollar: value })}
+          onLoanAmountCalculated={(loanAmount) => onInputsChange({ ...inputs, principal: loanAmount })}
+        />
 
         {/* Interest Rate */}
         <div className="space-y-2">
@@ -129,16 +120,26 @@ export function LoanInputForm({ loanNumber, inputs, onInputsChange, onCalculate 
           )}
         </div>
 
-        {/* NEW: Down Payment Section */}
-        <DownPaymentSection
-          propertyPrice={inputs.propertyPrice}
-          downPaymentPercent={inputs.downPaymentPercent}
-          downPaymentDollar={inputs.downPaymentDollar}
-          onPropertyPriceChange={(value) => onInputsChange({ ...inputs, propertyPrice: value })}
-          onDownPaymentPercentChange={(value) => onInputsChange({ ...inputs, downPaymentPercent: value })}
-          onDownPaymentDollarChange={(value) => onInputsChange({ ...inputs, downPaymentDollar: value })}
-          onLoanAmountCalculated={(loanAmount) => onInputsChange({ ...inputs, principal: loanAmount })}
-        />
+        {/* Loan Amount - Calculated field */}
+        <div className="space-y-2">
+          <Label htmlFor={`principal-${loanNumber}`}>
+            Loan Amount
+          </Label>
+          <FormattedInput
+            id={`principal-${loanNumber}`}
+            formatType="currency"
+            placeholder="Calculated"
+            value={inputs.principal ?? ''}
+            onChange={() => {}} // Read-only calculated field
+            onBlur={(e) => handleBlur('principal', (e.target as HTMLInputElement).value)}
+            disabled
+          />
+          {errors.principal && (
+            <Alert variant="destructive">
+              <AlertDescription>{errors.principal}</AlertDescription>
+            </Alert>
+          )}
+        </div>
 
         {/* NEW: Points & Fees Section */}
         <PointsFeesSection

@@ -25,10 +25,13 @@ export function FormattedInput({ value, onChange, formatType, onBlur, ...props }
     }
   };
 
-  // Update display value ONLY when not focused and value changes
-  // Also update if the field is readOnly (since it won't trigger focus events)
+  // Update display value when value changes and field is not focused
   React.useEffect(() => {
-    if (!isFocused || props.readOnly) {
+    // For readOnly fields, always update the display (they won't have focus)
+    // For regular fields, only update when not focused
+    const shouldUpdate = props.readOnly || !isFocused;
+
+    if (shouldUpdate) {
       if (value !== undefined && value !== '' && value !== 0) {
         setDisplayValue(formatNumber(value as number));
       } else {
@@ -38,6 +41,10 @@ export function FormattedInput({ value, onChange, formatType, onBlur, ...props }
   }, [value, isFocused, props.readOnly]);
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Don't handle focus for readOnly fields - they should always show formatted value
+    if (props.readOnly) {
+      return;
+    }
     setIsFocused(true);
     // Show raw number when focused
     const rawValue = value !== undefined && value !== '' && value !== 0 ? String(value) : '';
